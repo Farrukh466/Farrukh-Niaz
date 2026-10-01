@@ -20,7 +20,9 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
         genReqId: (req, res) => {
           const incoming = req.headers['x-request-id'];
           const id =
-            typeof incoming === 'string' && REQUEST_ID_PATTERN.test(incoming) ? incoming : randomUUID();
+            typeof incoming === 'string' && REQUEST_ID_PATTERN.test(incoming)
+              ? incoming
+              : randomUUID();
           res.setHeader('X-Request-Id', id);
           return id;
         },

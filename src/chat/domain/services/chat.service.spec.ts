@@ -10,17 +10,29 @@ class FakeQuota implements QuotaRepository {
   bundle: { id: string; remaining: number } | null = null;
   released: QuotaReservation[] = [];
 
-  async reserve(_userId: string, messageId: string, _period: string, freeLimit: number) {
+  async reserve(
+    _userId: string,
+    messageId: string,
+    _period: string,
+    freeLimit: number,
+  ) {
     if (this.freeUsed < freeLimit) {
       this.freeUsed += 1;
-      return { usageId: `usage-${messageId}`, messageId, source: { kind: 'free' as const } };
+      return {
+        usageId: `usage-${messageId}`,
+        messageId,
+        source: { kind: 'free' as const },
+      };
     }
     if (this.bundle && this.bundle.remaining > 0) {
       this.bundle.remaining -= 1;
       return {
         usageId: `usage-${messageId}`,
         messageId,
-        source: { kind: 'subscription' as const, subscriptionId: this.bundle.id },
+        source: {
+          kind: 'subscription' as const,
+          subscriptionId: this.bundle.id,
+        },
       };
     }
     return null;
@@ -50,7 +62,11 @@ class FakeChats implements ChatRepository {
 }
 
 const okAi: AiClient = {
-  complete: async (q) => ({ answer: `answer to ${q}`, promptTokens: 3, completionTokens: 5 }),
+  complete: async (q) => ({
+    answer: `answer to ${q}`,
+    promptTokens: 3,
+    completionTokens: 5,
+  }),
 };
 
 const user = { id: 'user-1', role: 'user' as const };
@@ -77,17 +93,25 @@ describe('ChatService quota', () => {
     }
     expect(sources).toEqual(['free', 'free', 'free', 'subscription']);
 
-    await expect(service.ask(user, 'one too many', meta)).rejects.toMatchObject({ code: 'QUOTA_EXHAUSTED' });
+    await expect(service.ask(user, 'one too many', meta)).rejects.toMatchObject(
+      { code: 'QUOTA_EXHAUSTED' },
+    );
   });
 
   it('records token usage on the saved message', async () => {
     const { chats, service } = setup();
     await service.ask(user, 'hello', meta);
-    expect(chats.saved[0].usage).toEqual({ promptTokens: 3, completionTokens: 5, totalTokens: 8 });
+    expect(chats.saved[0].usage).toEqual({
+      promptTokens: 3,
+      completionTokens: 5,
+      totalTokens: 8,
+    });
   });
 
   it('refunds the reserved quota when the AI call fails', async () => {
-    const failingAi: AiClient = { complete: async () => Promise.reject(new Error('AI down')) };
+    const failingAi: AiClient = {
+      complete: async () => Promise.reject(new Error('AI down')),
+    };
     const { quota, chats, service } = setup(failingAi);
 
     await expect(service.ask(user, 'hello', meta)).rejects.toThrow('AI down');
@@ -111,12 +135,18 @@ describe('ChatService quota', () => {
 });
 
 describe('ChatService access policy', () => {
-  it('hides another user\'s message as NOT_FOUND but lets an admin read it', async () => {
+  it("hides another user's message as NOT_FOUND but lets an admin read it", async () => {
     const { service } = setup();
     const { message } = await service.ask(user, 'private', meta);
 
-    await expect(service.get(otherUser, message.id)).rejects.toBeInstanceOf(DomainError);
-    await expect(service.get(otherUser, message.id)).rejects.toMatchObject({ code: 'NOT_FOUND' });
-    await expect(service.get(admin, message.id)).resolves.toMatchObject({ id: message.id });
+    await expect(service.get(otherUser, message.id)).rejects.toBeInstanceOf(
+      DomainError,
+    );
+    await expect(service.get(otherUser, message.id)).rejects.toMatchObject({
+      code: 'NOT_FOUND',
+    });
+    await expect(service.get(admin, message.id)).resolves.toMatchObject({
+      id: message.id,
+    });
   });
 });

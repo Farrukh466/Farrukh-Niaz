@@ -21,7 +21,8 @@ export function planFor(tier: Tier, cycle: BillingCycle): PlanTerms {
   const base = MONTHLY_PLANS[tier];
   const yearly = cycle === 'yearly';
   return {
-    maxMessages: base.messages === null ? null : base.messages * (yearly ? 12 : 1),
+    maxMessages:
+      base.messages === null ? null : base.messages * (yearly ? 12 : 1),
     priceCents: yearly ? base.priceCents * 10 : base.priceCents,
   };
 }

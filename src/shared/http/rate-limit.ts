@@ -1,6 +1,7 @@
 import { SetMetadata } from '@nestjs/common';
 
-export type RateLimitGroup = 'auth' | 'chat' | 'subscriptions' | 'admin' | 'default';
+export type RateLimitGroup =
+  'auth' | 'chat' | 'subscriptions' | 'admin' | 'default';
 
 export interface RateLimitRule {
   limit: number;
@@ -9,15 +10,34 @@ export interface RateLimitRule {
 
 export const RATE_LIMIT_KEY = 'rateLimitGroup';
 
-export const RATE_LIMITS: Record<RateLimitGroup, { perIp: RateLimitRule; perUser: RateLimitRule }> = {
-  auth: { perIp: { limit: 20, windowSeconds: 60 }, perUser: { limit: 30, windowSeconds: 60 } },
-  chat: { perIp: { limit: 60, windowSeconds: 60 }, perUser: { limit: 10, windowSeconds: 60 } },
-  subscriptions: { perIp: { limit: 60, windowSeconds: 60 }, perUser: { limit: 20, windowSeconds: 60 } },
-  admin: { perIp: { limit: 30, windowSeconds: 60 }, perUser: { limit: 10, windowSeconds: 60 } },
-  default: { perIp: { limit: 100, windowSeconds: 60 }, perUser: { limit: 60, windowSeconds: 60 } },
+export const RATE_LIMITS: Record<
+  RateLimitGroup,
+  { perIp: RateLimitRule; perUser: RateLimitRule }
+> = {
+  auth: {
+    perIp: { limit: 20, windowSeconds: 60 },
+    perUser: { limit: 30, windowSeconds: 60 },
+  },
+  chat: {
+    perIp: { limit: 60, windowSeconds: 60 },
+    perUser: { limit: 10, windowSeconds: 60 },
+  },
+  subscriptions: {
+    perIp: { limit: 60, windowSeconds: 60 },
+    perUser: { limit: 20, windowSeconds: 60 },
+  },
+  admin: {
+    perIp: { limit: 30, windowSeconds: 60 },
+    perUser: { limit: 10, windowSeconds: 60 },
+  },
+  default: {
+    perIp: { limit: 100, windowSeconds: 60 },
+    perUser: { limit: 60, windowSeconds: 60 },
+  },
 };
 
-export const RateLimit = (group: RateLimitGroup) => SetMetadata(RATE_LIMIT_KEY, group);
+export const RateLimit = (group: RateLimitGroup) =>
+  SetMetadata(RATE_LIMIT_KEY, group);
 
 export interface RateLimitDecision {
   allowed: boolean;

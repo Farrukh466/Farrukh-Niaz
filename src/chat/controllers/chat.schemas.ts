@@ -3,7 +3,10 @@ import { sanitizeText } from '../../shared/http/sanitize';
 
 export const AskQuestionSchema = z
   .object({
-    question: z.string().transform(sanitizeText).pipe(z.string().min(1).max(2000)),
+    question: z
+      .string()
+      .transform(sanitizeText)
+      .pipe(z.string().min(1).max(2000)),
   })
   .strict();
 

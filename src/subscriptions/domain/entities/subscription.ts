@@ -21,7 +21,9 @@ export interface Subscription {
 }
 
 export function remainingMessages(sub: Subscription): number | null {
-  return sub.maxMessages === null ? null : Math.max(0, sub.maxMessages - sub.usedMessages);
+  return sub.maxMessages === null
+    ? null
+    : Math.max(0, sub.maxMessages - sub.usedMessages);
 }
 
 export function openSubscription(
@@ -54,15 +56,31 @@ export function openSubscription(
 
 export function cancelSubscription(sub: Subscription, now: Date): Subscription {
   if (sub.status !== 'active') {
-    throw new DomainError('INVALID_STATE', `Cannot cancel a ${sub.status} subscription`);
+    throw new DomainError(
+      'INVALID_STATE',
+      `Cannot cancel a ${sub.status} subscription`,
+    );
   }
   const end = sub.endDate < now ? sub.endDate : now;
-  return { ...sub, status: 'cancelled', autoRenew: false, cancelledAt: now, endDate: end, renewalDate: end };
+  return {
+    ...sub,
+    status: 'cancelled',
+    autoRenew: false,
+    cancelledAt: now,
+    endDate: end,
+    renewalDate: end,
+  };
 }
 
-export function withAutoRenew(sub: Subscription, autoRenew: boolean): Subscription {
+export function withAutoRenew(
+  sub: Subscription,
+  autoRenew: boolean,
+): Subscription {
   if (sub.status !== 'active') {
-    throw new DomainError('INVALID_STATE', `Cannot change auto-renew on a ${sub.status} subscription`);
+    throw new DomainError(
+      'INVALID_STATE',
+      `Cannot change auto-renew on a ${sub.status} subscription`,
+    );
   }
   return { ...sub, autoRenew };
 }

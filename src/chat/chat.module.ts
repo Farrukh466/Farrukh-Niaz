@@ -38,8 +38,11 @@ export const AI_CLIENT = Symbol('AI_CLIENT');
     {
       provide: ChatService,
       inject: [QUOTA_REPOSITORY, CHAT_REPOSITORY, AI_CLIENT],
-      useFactory: (quota: QuotaRepository, chats: ChatRepository, ai: AiClient) =>
-        new ChatService(quota, chats, ai),
+      useFactory: (
+        quota: QuotaRepository,
+        chats: ChatRepository,
+        ai: AiClient,
+      ) => new ChatService(quota, chats, ai),
     },
   ],
 })

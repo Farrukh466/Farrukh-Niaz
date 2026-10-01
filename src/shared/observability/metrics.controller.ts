@@ -16,12 +16,15 @@ export class MetricsController {
   @Get()
   async metrics() {
     const now = new Date();
-    const [users, chatMessages, activeSubscriptions, failedPayments] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.chatMessage.count(),
-      this.prisma.subscription.count({ where: { status: 'active', endDate: { gt: now } } }),
-      this.prisma.paymentAttempt.count({ where: { succeeded: false } }),
-    ]);
+    const [users, chatMessages, activeSubscriptions, failedPayments] =
+      await Promise.all([
+        this.prisma.user.count(),
+        this.prisma.chatMessage.count(),
+        this.prisma.subscription.count({
+          where: { status: 'active', endDate: { gt: now } },
+        }),
+        this.prisma.paymentAttempt.count({ where: { succeeded: false } }),
+      ]);
     return {
       ...this.registry.snapshot(),
       business: { users, chatMessages, activeSubscriptions, failedPayments },

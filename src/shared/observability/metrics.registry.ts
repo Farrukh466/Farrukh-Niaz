@@ -14,14 +14,20 @@ export class MetricsRegistry {
     this.totalLatencyMs += durationMs;
     this.maxLatencyMs = Math.max(this.maxLatencyMs, durationMs);
     const statusClass = `${Math.floor(statusCode / 100)}xx`;
-    this.byStatusClass.set(statusClass, (this.byStatusClass.get(statusClass) ?? 0) + 1);
+    this.byStatusClass.set(
+      statusClass,
+      (this.byStatusClass.get(statusClass) ?? 0) + 1,
+    );
   }
 
   middleware() {
     return (_req: Request, res: Response, next: NextFunction): void => {
       const start = process.hrtime.bigint();
       res.on('finish', () => {
-        this.record(res.statusCode, Number(process.hrtime.bigint() - start) / 1e6);
+        this.record(
+          res.statusCode,
+          Number(process.hrtime.bigint() - start) / 1e6,
+        );
       });
       next();
     };
@@ -34,7 +40,10 @@ export class MetricsRegistry {
         total: this.totalRequests,
         byStatusClass: Object.fromEntries(this.byStatusClass),
         averageLatencyMs:
-          this.totalRequests === 0 ? 0 : Math.round((this.totalLatencyMs / this.totalRequests) * 100) / 100,
+          this.totalRequests === 0
+            ? 0
+            : Math.round((this.totalLatencyMs / this.totalRequests) * 100) /
+              100,
         maxLatencyMs: Math.round(this.maxLatencyMs * 100) / 100,
       },
     };

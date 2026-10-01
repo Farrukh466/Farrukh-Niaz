@@ -20,7 +20,12 @@ export class PrismaQuotaRepository implements QuotaRepository {
 
       if (freeUsed < freeLimit) {
         const usage = await tx.usageRecord.create({
-          data: { userId, periodMonth: period, isFree: true, chatMessageId: messageId },
+          data: {
+            userId,
+            periodMonth: period,
+            isFree: true,
+            chatMessageId: messageId,
+          },
         });
         return { usageId: usage.id, messageId, source: { kind: 'free' } };
       }
@@ -47,9 +52,19 @@ export class PrismaQuotaRepository implements QuotaRepository {
 
       const subscriptionId = rows[0].id;
       const usage = await tx.usageRecord.create({
-        data: { userId, subscriptionId, periodMonth: period, isFree: false, chatMessageId: messageId },
+        data: {
+          userId,
+          subscriptionId,
+          periodMonth: period,
+          isFree: false,
+          chatMessageId: messageId,
+        },
       });
-      return { usageId: usage.id, messageId, source: { kind: 'subscription', subscriptionId } };
+      return {
+        usageId: usage.id,
+        messageId,
+        source: { kind: 'subscription', subscriptionId },
+      };
     });
   }
 

@@ -33,22 +33,38 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const req = http.getRequest<Request & { id?: string }>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let body: ErrorBody = { code: 'INTERNAL_ERROR', message: 'Internal server error' };
+    let body: ErrorBody = {
+      code: 'INTERNAL_ERROR',
+      message: 'Internal server error',
+    };
 
     if (exception instanceof DomainError) {
       status = DOMAIN_STATUS[exception.code];
-      body = { code: exception.code, message: exception.message, details: exception.details };
+      body = {
+        code: exception.code,
+        message: exception.message,
+        details: exception.details,
+      };
     } else if (exception instanceof HttpException) {
       status = exception.getStatus();
       const raw = exception.getResponse();
       if (typeof raw === 'object' && raw !== null && 'code' in raw) {
         const r = raw as Record<string, unknown>;
-        body = { code: String(r.code), message: String(r.message ?? exception.message), details: r.details };
+        body = {
+          code: String(r.code),
+          message: String(r.message ?? exception.message),
+          details: r.details,
+        };
       } else {
-        body = { code: HttpStatus[status] ?? 'HTTP_ERROR', message: exception.message };
+        body = {
+          code: HttpStatus[status] ?? 'HTTP_ERROR',
+          message: exception.message,
+        };
       }
     } else {
-      this.logger.error(exception instanceof Error ? exception.stack : String(exception));
+      this.logger.error(
+        exception instanceof Error ? exception.stack : String(exception),
+      );
     }
 
     res.status(status).json({

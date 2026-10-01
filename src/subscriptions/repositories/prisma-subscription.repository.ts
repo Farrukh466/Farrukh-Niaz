@@ -78,10 +78,18 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
     return rows.map(toDomain);
   }
 
-  async transition(previous: Subscription, next: Subscription, payment?: PaymentRecord): Promise<boolean> {
+  async transition(
+    previous: Subscription,
+    next: Subscription,
+    payment?: PaymentRecord,
+  ): Promise<boolean> {
     return this.prisma.$transaction(async (tx) => {
       const result = await tx.subscription.updateMany({
-        where: { id: previous.id, status: previous.status, renewalDate: previous.renewalDate },
+        where: {
+          id: previous.id,
+          status: previous.status,
+          renewalDate: previous.renewalDate,
+        },
         data: {
           status: next.status,
           autoRenew: next.autoRenew,
@@ -113,6 +121,8 @@ export class PrismaSubscriptionRepository implements SubscriptionRepository {
   }
 
   async countFreeUsage(userId: string, period: string): Promise<number> {
-    return this.prisma.usageRecord.count({ where: { userId, periodMonth: period, isFree: true } });
+    return this.prisma.usageRecord.count({
+      where: { userId, periodMonth: period, isFree: true },
+    });
   }
 }

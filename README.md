@@ -6,6 +6,21 @@ Auth0; the service only verifies tokens.
 
 ## Quick start
 
+## Assumptions
+
+- **Free quota:** 3 messages per user per calendar month (UTC), reset on the 1st by keying usage on `YYYY-MM` rather than running a job.
+- **Quota order:** free messages are always consumed before any paid bundle.
+- **"Bundle with the latest remaining quota"** means the most recently started active bundle that still has capacity.
+- **Plans:** Basic 10 / Pro 100 / Enterprise unlimited messages per month at $9.99 / $49.99 / $199.99. Yearly = 12× messages for 10× the monthly price. The tier sizes and prices are my choice; the brief did not specify them.
+- **Initial purchase** is recorded as a successful payment; the random failure simulation (20%) applies to renewals, as the brief describes.
+- **Renewals** run on demand through an admin endpoint instead of a scheduler, to keep the demo deterministic.
+- **Cancellation** ends the current cycle immediately (not at period end), stops renewals and keeps all usage history.
+- **Failed renewal payment** marks the subscription `inactive`; there is no retry or grace period.
+- **Roles** come from the identity provider's token; anyone without the `admin` role is a regular user.
+- **Users** are created on their first authenticated request, from the verified token claims.
+- **Mocked AI tokens** are estimated as one token per four characters.
+- **`/health`** is intentionally unauthenticated so load balancers can probe it.
+
 **Requirements:** Node.js 22, PostgreSQL 14+, an Auth0 tenant (free tier is enough).
 
 ```bash

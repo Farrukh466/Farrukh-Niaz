@@ -1,5 +1,8 @@
 import { randomUUID } from 'node:crypto';
-import { FREE_MESSAGES_PER_MONTH, billingPeriod } from '../../../chat/domain/entities/quota';
+import {
+  FREE_MESSAGES_PER_MONTH,
+  billingPeriod,
+} from '../../../chat/domain/entities/quota';
 import { Actor } from '../../../shared/domain/actor';
 import { DomainError } from '../../../shared/errors/domain-error';
 import { BillingCycle, Tier } from '../entities/plan';
@@ -22,7 +25,12 @@ export interface CreateSubscriptionInput {
 export interface UsageSummary {
   period: string;
   free: { limit: number; used: number; remaining: number };
-  subscriptions: Array<{ id: string; tier: Tier; remaining: number | null; endDate: Date }>;
+  subscriptions: Array<{
+    id: string;
+    tier: Tier;
+    remaining: number | null;
+    endDate: Date;
+  }>;
 }
 
 export class SubscriptionService {
@@ -32,7 +40,10 @@ export class SubscriptionService {
     private readonly clock: () => Date = () => new Date(),
   ) {}
 
-  async create(actor: Actor, input: CreateSubscriptionInput): Promise<Subscription> {
+  async create(
+    actor: Actor,
+    input: CreateSubscriptionInput,
+  ): Promise<Subscription> {
     const sub = openSubscription(
       this.newId(),
       actor.id,
@@ -41,7 +52,10 @@ export class SubscriptionService {
       input.autoRenew,
       this.clock(),
     );
-    await this.subs.create(sub, { amountCents: sub.priceCents, succeeded: true });
+    await this.subs.create(sub, {
+      amountCents: sub.priceCents,
+      succeeded: true,
+    });
     return sub;
   }
 
@@ -57,7 +71,11 @@ export class SubscriptionService {
     return next;
   }
 
-  async setAutoRenew(actor: Actor, id: string, autoRenew: boolean): Promise<Subscription> {
+  async setAutoRenew(
+    actor: Actor,
+    id: string,
+    autoRenew: boolean,
+  ): Promise<Subscription> {
     const current = await this.load(actor, id);
     const next = withAutoRenew(current, autoRenew);
     await this.commit(current, next);
@@ -96,10 +114,16 @@ export class SubscriptionService {
     return sub;
   }
 
-  private async commit(current: Subscription, next: Subscription): Promise<void> {
+  private async commit(
+    current: Subscription,
+    next: Subscription,
+  ): Promise<void> {
     const applied = await this.subs.transition(current, next);
     if (!applied) {
-      throw new DomainError('CONFLICT', 'Subscription changed concurrently; retry the request');
+      throw new DomainError(
+        'CONFLICT',
+        'Subscription changed concurrently; retry the request',
+      );
     }
   }
 }

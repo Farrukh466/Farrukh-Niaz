@@ -1,9 +1,5 @@
 export type DomainErrorCode =
-  | 'QUOTA_EXHAUSTED'
-  | 'FORBIDDEN'
-  | 'NOT_FOUND'
-  | 'INVALID_STATE'
-  | 'CONFLICT';
+  'QUOTA_EXHAUSTED' | 'FORBIDDEN' | 'NOT_FOUND' | 'INVALID_STATE' | 'CONFLICT';
 
 export class DomainError extends Error {
   constructor(

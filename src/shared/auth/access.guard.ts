@@ -38,7 +38,11 @@ export class AccessGuard implements CanActivate {
     const req = http.getRequest<AuthenticatedRequest>();
     const res = http.getResponse<Response>();
 
-    const group = this.reflector.getAllAndOverride<RateLimitGroup | undefined>(RATE_LIMIT_KEY, targets) ?? 'default';
+    const group =
+      this.reflector.getAllAndOverride<RateLimitGroup | undefined>(
+        RATE_LIMIT_KEY,
+        targets,
+      ) ?? 'default';
     const limits = RATE_LIMITS[group];
     const ip = req.ip ?? req.socket.remoteAddress ?? 'unknown';
     this.enforce(`ip:${group}:${ip}`, limits.perIp, res);
@@ -53,9 +57,15 @@ export class AccessGuard implements CanActivate {
 
     this.enforce(`user:${group}:${req.user.id}`, limits.perUser, res);
 
-    const required = this.reflector.getAllAndOverride<Role[] | undefined>(ROLES_KEY, targets);
+    const required = this.reflector.getAllAndOverride<Role[] | undefined>(
+      ROLES_KEY,
+      targets,
+    );
     if (required && !required.includes(req.user.role)) {
-      throw new ForbiddenException({ code: 'FORBIDDEN', message: 'Insufficient role for this resource' });
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Insufficient role for this resource',
+      });
     }
     return true;
   }
@@ -80,12 +90,18 @@ export class AccessGuard implements CanActivate {
   private async verify(header: string | undefined): Promise<VerifiedClaims> {
     const [scheme, token] = (header ?? '').split(' ');
     if (scheme !== 'Bearer' || !token) {
-      throw new UnauthorizedException({ code: 'MISSING_TOKEN', message: 'Bearer access token required' });
+      throw new UnauthorizedException({
+        code: 'MISSING_TOKEN',
+        message: 'Bearer access token required',
+      });
     }
     try {
       return await this.verifier.verify(token);
     } catch {
-      throw new UnauthorizedException({ code: 'INVALID_TOKEN', message: 'Access token is invalid or expired' });
+      throw new UnauthorizedException({
+        code: 'INVALID_TOKEN',
+        message: 'Access token is invalid or expired',
+      });
     }
   }
 }

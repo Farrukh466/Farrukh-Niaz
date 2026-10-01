@@ -4,10 +4,14 @@ describe('FixedWindowRateLimiter', () => {
   const rule = { limit: 3, windowSeconds: 60 };
 
   it('allows up to the limit, then blocks with a retry hint', () => {
-    let t = 0;
+    const t = 0;
     const limiter = new FixedWindowRateLimiter(() => t);
 
-    expect([1, 2, 3].map(() => limiter.hit('k', rule).allowed)).toEqual([true, true, true]);
+    expect([1, 2, 3].map(() => limiter.hit('k', rule).allowed)).toEqual([
+      true,
+      true,
+      true,
+    ]);
     const blocked = limiter.hit('k', rule);
     expect(blocked.allowed).toBe(false);
     expect(blocked.retryAfterSeconds).toBe(60);

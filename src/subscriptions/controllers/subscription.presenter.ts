@@ -1,4 +1,7 @@
-import { Subscription, remainingMessages } from '../domain/entities/subscription';
+import {
+  Subscription,
+  remainingMessages,
+} from '../domain/entities/subscription';
 
 export function presentSubscription(sub: Subscription) {
   return {

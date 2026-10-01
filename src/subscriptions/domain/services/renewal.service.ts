@@ -27,17 +27,28 @@ export class RenewalService {
 
     const now = this.clock();
     const due = await this.subs.findDue(now, limit);
-    const report: RenewalReport = { examined: due.length, renewed: 0, paymentFailed: 0, expired: 0, skipped: 0 };
+    const report: RenewalReport = {
+      examined: due.length,
+      renewed: 0,
+      paymentFailed: 0,
+      expired: 0,
+      skipped: 0,
+    };
 
     for (const sub of due) {
       if (!sub.autoRenew) {
-        const applied = await this.subs.transition(sub, expireSubscription(sub));
+        const applied = await this.subs.transition(
+          sub,
+          expireSubscription(sub),
+        );
         applied ? report.expired++ : report.skipped++;
         continue;
       }
 
       const charge = await this.payments.charge(sub.userId, sub.priceCents);
-      const next = charge.ok ? renewSubscription(sub, now) : markPaymentFailed(sub);
+      const next = charge.ok
+        ? renewSubscription(sub, now)
+        : markPaymentFailed(sub);
       const applied = await this.subs.transition(sub, next, {
         amountCents: sub.priceCents,
         succeeded: charge.ok,

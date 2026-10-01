@@ -11,13 +11,19 @@ export const SubscriptionPolicy = {
 
   assertCanRunRenewals(actor: Actor): void {
     if (actor.role !== 'admin') {
-      throw new DomainError('FORBIDDEN', 'Only administrators can run renewals');
+      throw new DomainError(
+        'FORBIDDEN',
+        'Only administrators can run renewals',
+      );
     }
   },
 
   assertCanViewUser(actor: Actor, userId: string): void {
     if (actor.role !== 'admin' && actor.id !== userId) {
-      throw new DomainError('FORBIDDEN', 'Cannot view another user\'s subscriptions');
+      throw new DomainError(
+        'FORBIDDEN',
+        "Cannot view another user's subscriptions",
+      );
     }
   },
 };

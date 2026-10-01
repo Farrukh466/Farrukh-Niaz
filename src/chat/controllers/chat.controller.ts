@@ -1,11 +1,26 @@
-import { Body, Controller, Get, HttpCode, Param, ParseUUIDPipe, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import { AuthUser, AuthenticatedRequest } from '../../shared/auth/auth.types';
 import { CurrentUser } from '../../shared/auth/decorators';
 import { ZodValidationPipe } from '../../shared/http/zod-validation.pipe';
 import { ChatMessage } from '../domain/entities/chat-message';
 import { QuotaSource } from '../domain/entities/quota';
 import { ChatService } from '../domain/services/chat.service';
-import { AskQuestionDto, AskQuestionSchema, ListChatsQuery, ListChatsQuerySchema } from './chat.schemas';
+import {
+  AskQuestionDto,
+  AskQuestionSchema,
+  ListChatsQuery,
+  ListChatsQuerySchema,
+} from './chat.schemas';
 import { RateLimit } from '../../shared/http/rate-limit';
 
 function toResponse(message: ChatMessage, source?: QuotaSource) {
@@ -49,7 +64,10 @@ export class ChatController {
   }
 
   @Get(':id')
-  async get(@CurrentUser() user: AuthUser, @Param('id', new ParseUUIDPipe()) id: string) {
+  async get(
+    @CurrentUser() user: AuthUser,
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ) {
     return toResponse(await this.chat.get(user, id));
   }
 }

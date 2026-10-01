@@ -17,7 +17,12 @@ import { UserSyncService } from './user-sync.service';
       provide: JWKS,
       inject: [ConfigService],
       useFactory: (config: ConfigService<Env, true>) =>
-        createRemoteJWKSet(new URL('.well-known/jwks.json', config.get('AUTH_ISSUER_URL', { infer: true }))),
+        createRemoteJWKSet(
+          new URL(
+            '.well-known/jwks.json',
+            config.get('AUTH_ISSUER_URL', { infer: true }),
+          ),
+        ),
     },
     { provide: TokenVerifier, useClass: JoseTokenVerifier },
     { provide: FixedWindowRateLimiter, useValue: new FixedWindowRateLimiter() },

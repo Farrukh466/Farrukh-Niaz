@@ -45,7 +45,9 @@ export class JoseTokenVerifier extends TokenVerifier {
     return {
       subject: payload.sub as string,
       email: typeof email === 'string' ? email : undefined,
-      roles: Array.isArray(roles) ? roles.filter((r): r is string => typeof r === 'string') : [],
+      roles: Array.isArray(roles)
+        ? roles.filter((r): r is string => typeof r === 'string')
+        : [],
     };
   }
 }

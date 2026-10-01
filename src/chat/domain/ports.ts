@@ -2,7 +2,12 @@ import { ChatMessage } from './entities/chat-message';
 import { QuotaReservation } from './entities/quota';
 
 export interface QuotaRepository {
-  reserve(userId: string, messageId: string, period: string, freeLimit: number): Promise<QuotaReservation | null>;
+  reserve(
+    userId: string,
+    messageId: string,
+    period: string,
+    freeLimit: number,
+  ): Promise<QuotaReservation | null>;
   release(reservation: QuotaReservation): Promise<void>;
 }
 

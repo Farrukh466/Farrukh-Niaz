@@ -19,23 +19,28 @@ export const PAYMENT_GATEWAY = Symbol('PAYMENT_GATEWAY');
     {
       provide: SUBSCRIPTION_REPOSITORY,
       inject: [PrismaService],
-      useFactory: (prisma: PrismaService) => new PrismaSubscriptionRepository(prisma),
+      useFactory: (prisma: PrismaService) =>
+        new PrismaSubscriptionRepository(prisma),
     },
     {
       provide: PAYMENT_GATEWAY,
       inject: [ConfigService],
       useFactory: (config: ConfigService<Env, true>) =>
-        new MockPaymentGateway(config.get('PAYMENT_FAILURE_RATE', { infer: true })),
+        new MockPaymentGateway(
+          config.get('PAYMENT_FAILURE_RATE', { infer: true }),
+        ),
     },
     {
       provide: SubscriptionService,
       inject: [SUBSCRIPTION_REPOSITORY],
-      useFactory: (repo: SubscriptionRepository) => new SubscriptionService(repo),
+      useFactory: (repo: SubscriptionRepository) =>
+        new SubscriptionService(repo),
     },
     {
       provide: RenewalService,
       inject: [SUBSCRIPTION_REPOSITORY, PAYMENT_GATEWAY],
-      useFactory: (repo: SubscriptionRepository, payments: PaymentGateway) => new RenewalService(repo, payments),
+      useFactory: (repo: SubscriptionRepository, payments: PaymentGateway) =>
+        new RenewalService(repo, payments),
     },
   ],
 })

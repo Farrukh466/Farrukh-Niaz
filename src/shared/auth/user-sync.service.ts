@@ -9,7 +9,10 @@ export class UserSyncService {
 
   async sync(claims: VerifiedClaims): Promise<AuthUser> {
     if (!claims.email) {
-      throw new UnauthorizedException({ code: 'MISSING_EMAIL_CLAIM', message: 'Token has no email claim' });
+      throw new UnauthorizedException({
+        code: 'MISSING_EMAIL_CLAIM',
+        message: 'Token has no email claim',
+      });
     }
     const role: Role = claims.roles.includes('admin') ? 'admin' : 'user';
 

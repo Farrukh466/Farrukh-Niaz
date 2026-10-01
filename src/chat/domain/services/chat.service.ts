@@ -2,9 +2,18 @@ import { randomUUID } from 'node:crypto';
 import { Actor } from '../../../shared/domain/actor';
 import { DomainError } from '../../../shared/errors/domain-error';
 import { ChatMessage, RequestMetadata } from '../entities/chat-message';
-import { FREE_MESSAGES_PER_MONTH, QuotaSource, billingPeriod } from '../entities/quota';
+import {
+  FREE_MESSAGES_PER_MONTH,
+  QuotaSource,
+  billingPeriod,
+} from '../entities/quota';
 import { ChatPolicy } from '../policies/chat.policy';
-import { AiClient, AiCompletion, ChatRepository, QuotaRepository } from '../ports';
+import {
+  AiClient,
+  AiCompletion,
+  ChatRepository,
+  QuotaRepository,
+} from '../ports';
 
 export interface AskResult {
   message: ChatMessage;
@@ -20,17 +29,30 @@ export class ChatService {
     private readonly clock: () => Date = () => new Date(),
   ) {}
 
-  async ask(actor: Actor, question: string, metadata: RequestMetadata): Promise<AskResult> {
+  async ask(
+    actor: Actor,
+    question: string,
+    metadata: RequestMetadata,
+  ): Promise<AskResult> {
     const now = this.clock();
     const period = billingPeriod(now);
     const messageId = this.newId();
 
-    const reservation = await this.quota.reserve(actor.id, messageId, period, FREE_MESSAGES_PER_MONTH);
+    const reservation = await this.quota.reserve(
+      actor.id,
+      messageId,
+      period,
+      FREE_MESSAGES_PER_MONTH,
+    );
     if (!reservation) {
-      throw new DomainError('QUOTA_EXHAUSTED', 'No free messages or subscription quota remaining', {
-        period,
-        freeMessagesPerMonth: FREE_MESSAGES_PER_MONTH,
-      });
+      throw new DomainError(
+        'QUOTA_EXHAUSTED',
+        'No free messages or subscription quota remaining',
+        {
+          period,
+          freeMessagesPerMonth: FREE_MESSAGES_PER_MONTH,
+        },
+      );
     }
 
     let completion: AiCompletion;

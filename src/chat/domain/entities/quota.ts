@@ -4,7 +4,8 @@ export function billingPeriod(date: Date): string {
   return date.toISOString().slice(0, 7);
 }
 
-export type QuotaSource = { kind: 'free' } | { kind: 'subscription'; subscriptionId: string };
+export type QuotaSource =
+  { kind: 'free' } | { kind: 'subscription'; subscriptionId: string };
 
 export interface QuotaReservation {
   usageId: string;

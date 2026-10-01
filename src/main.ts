@@ -11,7 +11,10 @@ import { requireJson } from './shared/http/require-json.middleware';
 import { MetricsRegistry } from './shared/observability/metrics.registry';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true, bodyParser: false });
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    bodyParser: false,
+  });
   const config = app.get<ConfigService<Env, true>>(ConfigService);
 
   app.useLogger(app.get(Logger));
@@ -19,7 +22,9 @@ async function bootstrap(): Promise<void> {
 
   app.use(helmet());
   app.use(requireJson);
-  app.use(json({ limit: config.get('BODY_LIMIT', { infer: true }), strict: true }));
+  app.use(
+    json({ limit: config.get('BODY_LIMIT', { infer: true }), strict: true }),
+  );
 
   app.enableCors({
     origin: config
@@ -27,14 +32,22 @@ async function bootstrap(): Promise<void> {
       .split(',')
       .map((o) => o.trim()),
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Authorization', 'Content-Type', 'X-Request-Nonce', 'X-Request-Timestamp', 'X-Request-Id'],
+    allowedHeaders: [
+      'Authorization',
+      'Content-Type',
+      'X-Request-Nonce',
+      'X-Request-Timestamp',
+      'X-Request-Id',
+    ],
     exposedHeaders: ['X-Request-Id'],
     credentials: false,
     maxAge: 600,
   });
 
   app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalInterceptors(new TimeoutInterceptor(config.get('REQUEST_TIMEOUT_MS', { infer: true })));
+  app.useGlobalInterceptors(
+    new TimeoutInterceptor(config.get('REQUEST_TIMEOUT_MS', { infer: true })),
+  );
   app.enableShutdownHooks();
 
   await app.listen(config.get('PORT', { infer: true }));

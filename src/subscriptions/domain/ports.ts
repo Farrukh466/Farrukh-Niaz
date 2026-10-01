@@ -11,7 +11,11 @@ export interface SubscriptionRepository {
   findById(id: string): Promise<Subscription | null>;
   listForUser(userId: string): Promise<Subscription[]>;
   findDue(now: Date, limit: number): Promise<Subscription[]>;
-  transition(previous: Subscription, next: Subscription, payment?: PaymentRecord): Promise<boolean>;
+  transition(
+    previous: Subscription,
+    next: Subscription,
+    payment?: PaymentRecord,
+  ): Promise<boolean>;
   countFreeUsage(userId: string, period: string): Promise<number>;
 }
 
