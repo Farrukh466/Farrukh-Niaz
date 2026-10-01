@@ -6,6 +6,7 @@ import { IncomingMessage } from 'node:http';
 import { validateEnv } from './shared/config/env';
 import { PrismaModule } from './shared/prisma/prisma.module';
 import { AuthModule } from './shared/auth/auth.module';
+import { ChatModule } from './chat/chat.module';
 
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -29,6 +30,7 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
     }),
     PrismaModule,
     AuthModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
