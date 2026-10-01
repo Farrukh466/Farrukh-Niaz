@@ -4,9 +4,9 @@ A NestJS + PostgreSQL backend for an AI chat service with monthly free quotas, p
 subscription bundles, simulated billing and renewals. Authentication is delegated to
 Auth0; the service only verifies tokens.
 
-## Quick start
-
 ## Assumptions
+
+## Quick start
 
 - **Free quota:** 3 messages per user per calendar month (UTC), reset on the 1st by keying usage on `YYYY-MM` rather than running a job.
 - **Quota order:** free messages are always consumed before any paid bundle.
