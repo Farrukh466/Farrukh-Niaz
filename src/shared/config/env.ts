@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   NONCE_WINDOW_SECONDS: z.coerce.number().int().positive().default(300),
   MOCK_AI_MIN_LATENCY_MS: z.coerce.number().int().nonnegative().default(300),
   MOCK_AI_MAX_LATENCY_MS: z.coerce.number().int().nonnegative().default(1200),
+  PAYMENT_FAILURE_RATE: z.coerce.number().min(0).max(1).default(0.2),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
