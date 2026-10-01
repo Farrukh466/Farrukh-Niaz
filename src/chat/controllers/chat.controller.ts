@@ -6,6 +6,7 @@ import { ChatMessage } from '../domain/entities/chat-message';
 import { QuotaSource } from '../domain/entities/quota';
 import { ChatService } from '../domain/services/chat.service';
 import { AskQuestionDto, AskQuestionSchema, ListChatsQuery, ListChatsQuerySchema } from './chat.schemas';
+import { RateLimit } from '../../shared/http/rate-limit';
 
 function toResponse(message: ChatMessage, source?: QuotaSource) {
   return {
@@ -18,6 +19,7 @@ function toResponse(message: ChatMessage, source?: QuotaSource) {
   };
 }
 
+@RateLimit('chat')
 @Controller('chat')
 export class ChatController {
   constructor(private readonly chat: ChatService) {}

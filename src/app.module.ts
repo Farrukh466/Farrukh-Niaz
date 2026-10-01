@@ -8,6 +8,7 @@ import { PrismaModule } from './shared/prisma/prisma.module';
 import { AuthModule } from './shared/auth/auth.module';
 import { ChatModule } from './chat/chat.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { ObservabilityModule } from './shared/observability/observability.module';
 
 const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
 
@@ -33,6 +34,7 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9-]{8,64}$/;
     AuthModule,
     ChatModule,
     SubscriptionsModule,
+    ObservabilityModule,
   ],
 })
 export class AppModule {}

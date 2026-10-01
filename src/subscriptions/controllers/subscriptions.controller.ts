@@ -10,7 +10,9 @@ import {
   UpdateSubscriptionDto,
   UpdateSubscriptionSchema,
 } from './subscription.schemas';
+import { RateLimit } from '../../shared/http/rate-limit';
 
+@RateLimit('subscriptions')
 @Controller('subscriptions')
 export class SubscriptionsController {
   constructor(private readonly subscriptions: SubscriptionService) {}

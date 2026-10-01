@@ -6,7 +6,9 @@ import { RenewalService } from '../domain/services/renewal.service';
 import { SubscriptionService } from '../domain/services/subscription.service';
 import { presentSubscription } from './subscription.presenter';
 import { AdminListQuery, AdminListQuerySchema } from './subscription.schemas';
+import { RateLimit } from '../../shared/http/rate-limit';
 
+@RateLimit('admin')
 @Controller('admin/subscriptions')
 @Roles('admin')
 export class AdminSubscriptionsController {

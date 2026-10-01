@@ -8,12 +8,14 @@ import { Env } from './shared/config/env';
 import { AllExceptionsFilter } from './shared/errors/all-exceptions.filter';
 import { TimeoutInterceptor } from './shared/http/timeout.interceptor';
 import { requireJson } from './shared/http/require-json.middleware';
+import { MetricsRegistry } from './shared/observability/metrics.registry';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true, bodyParser: false });
   const config = app.get<ConfigService<Env, true>>(ConfigService);
 
   app.useLogger(app.get(Logger));
+  app.use(app.get(MetricsRegistry).middleware());
 
   app.use(helmet());
   app.use(requireJson);
