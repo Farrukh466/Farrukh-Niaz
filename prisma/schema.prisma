@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+enum Tier {
+  basic
+  pro
+  enterprise
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+enum SubscriptionStatus {
+  active
+  inactive
+  cancelled
+}
+
+model User {
+  id            String         @id @default(uuid())
+  externalId    String         @unique
+  email         String         @unique
+  role          Role           @default(user)
+  createdAt     DateTime       @default(now())
+  messages      ChatMessage[]
+  subscriptions Subscription[]
+  usage         UsageRecord[]
+  payments      PaymentAttempt[]
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  question    String
+  answer      String
+  promptTokens     Int
+  completionTokens Int
+  totalTokens      Int
+  requestId   String
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Subscription {
+  id           String             @id @default(uuid())
+  userId       String
+  user         User               @relation(fields: [userId], references: [id])
+  tier         Tier
+  billingCycle BillingCycle
+  maxMessages  Int?
+  usedMessages Int                @default(0)
+  priceCents   Int
+  status       SubscriptionStatus @default(active)
+  autoRenew    Boolean            @default(true)
+  startDate    DateTime
+  endDate      DateTime
+  renewalDate  DateTime
+  cancelledAt  DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  usage        UsageRecord[]
+  payments     PaymentAttempt[]
+
+  @@index([userId, status, endDate])
+}
+
+model UsageRecord {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  periodMonth    String
+  isFree         Boolean
+  chatMessageId  String        @unique
+  createdAt      DateTime      @default(now())
+
+  @@index([userId, periodMonth, isFree])
+}
+
+model PaymentAttempt {
+  id             String       @id @default(uuid())
+  userId         String
+  user           User         @relation(fields: [userId], references: [id])
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+  amountCents    Int
+  succeeded      Boolean
+  reason         String?
+  createdAt      DateTime     @default(now())
+}
+
+model RequestNonce {
+  nonce     String   @id
+  userId    String
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
